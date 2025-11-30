@@ -1,0 +1,21 @@
+[project]
+name = "tld"
+version = "0.1.0"
+description = ""
+dependencies = [
+    "tldextract==5.3.0",
+    "typer==0.20.0"
+]
+requires-python = ">=3.10"
+readme = "README.md"
+license = { text = "MIT" }
+
+[project.scripts]
+tld = "tld.click.__entry__:main"
+
+[tool.pdm.build]
+includes = ["tld"]
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"

@@ -1,0 +1,37 @@
+name: Pages
+on:
+  schedule:
+    - cron: "0 0 * * 0"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pdm-project/setup-pdm@v3
+      - run: |
+          pdm build; for filename in dist/*.whl; do break; done; pip3 install $filename
+      - run: |
+          tld make ./out/full.list
+          tld make ./out/part.list --no-full
+          tld index ./out full.list part.list
+      - name: Upload static files as artifact
+        id: deployment
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      pages: write
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
